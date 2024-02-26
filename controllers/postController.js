@@ -54,7 +54,11 @@ const updateArticle = async (req, res) => {
   try {
     const { id } = req.params;
     const { body } = req;
-    const blog = await Article.findOneAndUpdate({ _id: id }, { ...req.body });
+    const blog = await Article.findOneAndUpdate(
+      { _id: id },
+      { ...req.body },
+      { new: true }
+    );
     res
       .status(200)
       .json({ message: "article has been updated", newarticle: blog });
