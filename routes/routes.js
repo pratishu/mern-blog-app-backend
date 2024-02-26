@@ -19,18 +19,24 @@ const {
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.json({ name: "some name" });
+  res.json({
+    msg: "this is not proper route for API, use /user/adduser or /article/getAllArticles",
+  });
 });
-router.get("/user/adduser", adduser);
+
+// user routes
+router.post("/user/adduser", adduser);
 router.get("/user/removeuser", removeuser);
 router.get("/user/updateuser", updateuser);
 router.get("/user/getalluser", getalluser);
 router.get("/user/getsingleuser", getsingleuser);
-router.get("/article/createArticle", addArticle);
-router.get("/article/removeArticle", removeArticle);
+
+// article routes
+router.post("/article/createArticle", addArticle);
+router.delete("/article/removeArticle/:id", removeArticle);
 router.get("/article/getAllArticles", getAllArticles);
-router.get("/article/updateArticle", updateArticle);
-router.get("/article/getSingleArticle", getSingleArticle);
+router.patch("/article/updateArticle/:id", updateArticle);
+router.get("/article/getSingleArticle/:id", getSingleArticle); // currently post, get later when getting article with url
 
 router.get("/random", (req, res) => {
   res.status(200).send("this is not a good address");
