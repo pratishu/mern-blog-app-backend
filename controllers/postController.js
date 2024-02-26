@@ -1,21 +1,68 @@
-const addArticle = (req, res) => {
-  res.status(200).json({ article: "article created" });
+const Article = require("../models/articlemodels");
+
+// adding articles
+const addArticle = async (req, res) => {
+  const { title, author, body } = req.body;
+  try {
+    const newblog = await Article.create({ title, author, body }); // when you make a new document in collection, the db send the document in return
+    res.status(200).json({ newblog });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
-const removeArticle = (req, res) => {
-  res.status(200).json({ article: "article removed" });
+// removing articles by id
+const removeArticle = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedarticle = await Article.findOneAndDelete({ _id: id });
+    if (!deletedarticle) {
+      return res
+        .status(400)
+        .json({ error: "article is  not available with given id" });
+    }
+    res.status(200).json(deletedarticle);
+  } catch (error) {
+    console.error(error);
+  }
 };
-const getSingleArticle = (req, res) => {
-  res.status(200).json({ article: "this is one article" });
+
+// adding single articles by id
+const getSingleArticle = async (req, res) => {
+  // by title, later by id in url
+  try {
+    const { id } = req.params;
+    const singlearticle = await Article.findById(id); // based on id
+    res.status(200).json({ singlearticle });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
-const getAllArticles = (req, res) => {
-  res
-    .status(200)
-    .json({ article: "these are all the article that you requested" });
+
+// getting all articles
+const getAllArticles = async (req, res) => {
+  try {
+    const articles = await Article.find({}).sort({ createdAt: -1 }); // createdat: -1 will sort by decending order
+    res.status(200).json(articles);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
-const updateArticle = (req, res) => {
-  res.status(200).json({ article: "article has been updated" });
+
+// updating article by id
+const updateArticle = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { body } = req;
+    const blog = await Article.findOneAndUpdate({ _id: id }, { ...req.body });
+    res
+      .status(200)
+      .json({ message: "article has been updated", newarticle: blog });
+  } catch (error) {
+    res.status(400).json({ error: error });
+  }
 };
+
 module.exports = {
   addArticle,
   removeArticle,
