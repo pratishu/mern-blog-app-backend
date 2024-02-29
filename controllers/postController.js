@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Article = require("../models/articlemodels");
 
 // adding articles
@@ -15,11 +16,16 @@ const addArticle = async (req, res) => {
 const removeArticle = async (req, res) => {
   try {
     const { id } = req.params;
+    // when you provide invalid mongodb id
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: "invalid id" });
+    }
     const deletedarticle = await Article.findOneAndDelete({ _id: id });
     if (!deletedarticle) {
+      // wnen the article is not found with the article
       return res
         .status(400)
-        .json({ error: "article is  not available with given id" });
+        .json({ error: "article is not available with given id" });
     }
     res.status(200).json(deletedarticle);
   } catch (error) {
@@ -32,7 +38,17 @@ const getSingleArticle = async (req, res) => {
   // by title, later by id in url
   try {
     const { id } = req.params;
-    const singlearticle = await Article.findById(id); // based on id
+    // when you provide invalid mongodb id
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: "invalid id" });
+    }
+    const singlearticle = await Article.findById(id); // finding based on id
+    if (!singlearticle) {
+      // when the article is not found with correct id parameter accepted in mongodb
+      return res
+        .status(400)
+        .json({ error: "article is not available with given id" });
+    }
     res.status(200).json({ singlearticle });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -53,7 +69,10 @@ const getAllArticles = async (req, res) => {
 const updateArticle = async (req, res) => {
   try {
     const { id } = req.params;
-    const { body } = req;
+    // when you provide wrong mongodb id
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: "invlalid id" });
+    }
     const blog = await Article.findOneAndUpdate(
       { _id: id },
       { ...req.body },
