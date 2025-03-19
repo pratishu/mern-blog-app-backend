@@ -16,13 +16,13 @@ const addArticle = async (req, res) => {
 const removeArticle = async (req, res) => {
   try {
     const { id } = req.params;
-    // when you provide invalid mongodb id
+    //EDGE: check invalid id coming from user
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ error: "invalid id" });
     }
     const deletedarticle = await Article.findOneAndDelete({ _id: id });
+    // EDGE: check if article is not in db
     if (!deletedarticle) {
-      // wnen the article is not found with the article
       return res
         .status(400)
         .json({ error: "article is not available with given id" });
